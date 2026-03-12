@@ -1,8 +1,38 @@
-# 😴 Smart Braking System Based on Driver Monitoring
+# 🚗 Smart Braking System Based on Driver Monitoring
 
 A real-time drowsiness detection system that uses a laptop camera to monitor
-eye activity and controls a Raspberry Pi-powered motor car via socket communication.
-If the driver's eyes are detected as closed for too long, the car stops automatically.
+eye activity and automatically controls a Raspberry Pi-powered motor car via
+socket communication. If the driver's eyes are detected as closed for too long,
+the car stops automatically — before human error causes an accident.
+
+---
+
+## 👥 Team Members
+
+| Name | Register No. |
+|------|-------------|
+| S Suneet |
+| Patchipala Lokesh Sahitya | 
+| N Trivikram | 
+| Mithunraj T | 
+| Monish Babu V S | 
+| Kritin Panda |
+
+---
+
+## 🎓 Under the Guidance of
+
+**Prof. Lakhan Dev Sharma**
+Sr. Assistant Professor, SENSE
+VIT-AP University, Amaravati, Andhra Pradesh
+
+---
+
+## 🏫 Institution
+
+**VIT-AP University**
+G-30, Inavolu, Beside AP Secretariat,
+Amaravati, Andhra Pradesh – 522241
 
 ---
 
@@ -11,33 +41,36 @@ If the driver's eyes are detected as closed for too long, the car stops automati
 1. The **laptop** runs `server.py` which:
    - Captures live video from the webcam
    - Detects faces and eyes using dlib
-   - Calculates the Eye Aspect Ratio (EAR)
-   - Sends `move` or `stop` commands over WiFi
+   - Calculates the Eye Aspect Ratio (EAR) and PERCLOS
+   - Sends `move` or `stop` commands over WiFi via TCP/IP socket
 
 2. The **Raspberry Pi** runs `client.py` which:
    - Connects to the laptop over a socket connection
    - Receives `move` or `stop` commands
-   - Controls the motors accordingly via GPIO pins
+   - Controls the motors via GPIO pins using the L298N Motor Driver
 
 ---
 
 ## 🛠️ Hardware Required
 
-- Raspberry Pi (any model with GPIO)
-- Motor driver module (L298N or similar)
-- 2x DC motors
-- Laptop or PC with a webcam
-- Both devices connected to the same WiFi network
+- Raspberry Pi 3 Model B+
+- L298N Motor Driver
+- 4x DC Gear Motors (DIY Car Kit)
+- LED Light
+- Jumper Wires
+- Power Bank (for Raspberry Pi)
+- AA Battery Pack (for motors — isolated power system)
+- Laptop with webcam
 
 ---
 
 ## 📁 Project Structure
 ```
-drowsiness-detection/
+smart-braking-system/
 │
-├── server.py                            # Runs on laptop — eye detection
-├── client.py                            # Runs on Raspberry Pi — motor control
-├── requirements.txt                     # Required Python libraries
+├── server.py                              # Runs on Laptop — EAR/drowsiness detection
+├── client.py                              # Runs on Raspberry Pi — motor control
+├── requirements.txt                       # Required Python libraries
 └── shape_predictor_68_face_landmarks.dat  # Download separately (see below)
 ```
 
@@ -52,19 +85,19 @@ drowsiness-detection/
 ```
 
 2. Download the dlib shape predictor file:
-   - Download from: http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2
-   - Extract and place `shape_predictor_68_face_landmarks.dat` in the same folder as `server.py`
+   - Download: http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2
+   - Extract and place the `.dat` file in the same folder as `server.py`
 
 3. Find your laptop's IPv4 address:
 ```bash
-   ipconfig   # Windows
-   ifconfig   # Linux/Mac
+   ipconfig    # Windows
+   ifconfig    # Linux/Mac
 ```
 
 ### On your Raspberry Pi (client):
 1. Install dependencies:
 ```bash
-   pip install imutils scipy
+   pip install scipy imutils
 ```
    > `RPi.GPIO` comes pre-installed on Raspberry Pi OS
 
@@ -77,14 +110,14 @@ drowsiness-detection/
 
 ## ▶️ Running the Project
 
-> ⚠️ Both devices must be on the same WiFi network
+> ⚠️ Both devices must be connected to the same WiFi network
 
-**Step 1 — Run the server on your laptop first:**
+**Step 1 — Run server on laptop first:**
 ```bash
 python server.py
 ```
 
-**Step 2 — Run the client on your Raspberry Pi:**
+**Step 2 — Run client on Raspberry Pi:**
 ```bash
 python client.py
 ```
@@ -93,26 +126,23 @@ python client.py
 
 ## 🔌 GPIO Pin Wiring
 
-| Motor | PIN | GPIO |
+| Motor | PIN | Mode |
 |-------|-----|------|
-| Motor 1 - IN1 | 17 | BCM |
-| Motor 1 - IN2 | 18 | BCM |
-| Motor 2 - IN1 | 22 | BCM |
-| Motor 2 - IN2 | 23 | BCM |
+| Motor 1 - IN1 | GPIO 17 | BCM |
+| Motor 1 - IN2 | GPIO 18 | BCM |
+| Motor 2 - IN1 | GPIO 22 | BCM |
+| Motor 2 - IN2 | GPIO 23 | BCM |
 
 ---
 
 ## 📊 EAR (Eye Aspect Ratio) Logic
 ```
-EAR = (A + B) / (2 * C)
-
-A = distance between eye landmarks 1 & 5
-B = distance between eye landmarks 2 & 4
-C = distance between eye landmarks 0 & 3
+EAR = (||p2 - p6|| + ||p3 - p5||) / (2 × ||p1 - p4||)
 ```
 
-- If **EAR < 0.25** for **5 consecutive frames** → eyes are closed → `stop` command sent
-- Otherwise → eyes are open → `move` command sent
+- If **EAR < 0.25** for **5 consecutive frames** → eyes closed → `stop` sent
+- Otherwise → eyes open → `move` sent
+- **PERCLOS** metric used for robust fatigue detection over a time window
 
 ---
 
