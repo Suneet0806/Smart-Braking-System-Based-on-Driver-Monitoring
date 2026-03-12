@@ -128,8 +128,3 @@ RPi.GPIO
 
 ---
 
-## 🙏 Acknowledgements
-
-- [dlib](http://dlib.net/) for the face landmark predictor
-- [imutils](https://github.com/jrosebr1/imutils) by Adrian Rosebrock
-- Eye Aspect Ratio method based on the paper by Soukupová and Čech (2016)
