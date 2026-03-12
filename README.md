@@ -9,14 +9,14 @@ the car stops automatically — before human error causes an accident.
 
 ## 👥 Team Members
 
-| Name | Register No. |
+| Name | GitHub Accounts |
 |------|-------------|
-| S Suneet |
-| Patchipala Lokesh Sahitya | 
-| N Trivikram | 
-| Mithunraj T | 
-| Monish Babu V S | 
-| Kritin Panda |
+| S Suneet | https://github.com/Suneet0806 |
+| Patchipala Lokesh Sahitya | https://github.com/LokeshSahitya |
+| N Trivikram | https://github.com/nakkatrivikram299-prog |
+| Mithunraj T | https://github.com/mithunraj777 | 
+| Monish Babu V S | https://github.com/Agent1810 |
+| Kritin Panda | https://github.com/KritinSynced |
 
 ---
 
